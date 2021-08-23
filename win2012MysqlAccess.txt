@@ -1,0 +1,62 @@
+https://www.cnblogs.com/qianzf/p/7116455.html
+
+windows server2012如何开启mysql远程登录
+开发的首要任务就是要搭建起自己的服务器，下面主要是我这搭建记录下
+
+我的各种环境 服务器为Windows server2012  安装的MySQL数据的版本是5.6.10 ，64位。当然了版本对于安装没有太大的阻挠。安装数据库呢一般是由两种：
+
+一种是下载安装包自己安装，而另外一种是下载压缩包，解压缩后直接可以用（最多也是在配置下环境变量）。压缩包的百度云盘下载地址http://pan.baidu.com/s/1sl2jKAD 
+
+提取码 h22e。
+
+这个把压缩包解压后放到自己喜欢的位置就ok了，然后就是配置到电脑上的环境变量了。
+
+这个配置变量这里就不用在多说了吧。
+
+配置好以后，查看是否已经成功搭建好：
+
+1、打开命令行Windows+R，输入cmd回车；
+
+2、使用命令进入到你解压缩的mysql数据库的文件下的BIN目录下（不会进入，自行解决）
+
+ 输入net start mysql 启动数据库
+
+3、那么现在就要开始输入命令进入MySQL数据库了。那么现在问题来了，我们是采用解压压缩包的方式搭建的数据库的，用户？密码？ I don't know 啊，不知道不知道不知道，那咋办？  那就不要它，一般情况下解压缩的默认用户名是root  密码就只有天知地知作者知了。那么我们就在第一次进入数据库时把密码这项跳过去。找到解压缩后的MySQL数据库文件夹，找到my.ini或者my-default.ini配置文件，打开，在[mysqld]下添加skip-grant-tables，关闭MySQL服务并重新开启。这样在你输入登录命令时直接回车就ok了。登录命令： mysql -u root -p (-u 代表用户参数； root为用户名； -p为密码参数)。当你回车后看见MySQL，welcome 你了  恭喜你，你已经进入了MySQL的世界。那么你首要任务就是改密码了，不能老是无密登录啊，多不安全是吧。从现在开始你已经进入到MySQL语言中了，记得每次输完命令后面要加上“；”  无言的痛啊不要步后尘啊。
+
+4、修改密码 (加分号 加分号)
+
+mysql>use mysql ; 进入mysql数据库，允许操作mysql的数据库，
+
+mysql> update user set password=password("新密码") where user="root";  
+
+更新用户为root的密码
+
+mysql>flush privileges;  刷新数据库
+
+mysql>exit ;    退出
+
+都修改完了之后停止数据库：net stop mysql  然后把之前my.ini配置中添加的在删除掉,保存在重启数据库登录
+
+这时就有密码了哦。这样基本上MySQL数据库就搞定了，
+
+你可以敲打任何MySQL命令来玩转它了。
+
+到此为止数据库的环境搭建就ok了，但是这是在服务器上啊，测试了一下，不能远程访问啊，各种错误，不是已经搞定了吗？看来还没有ok啊。
+
+开始没有任何的操作，MySQL没有开启远程访问的权限，那么我们就赋予它。这个有好几种方法我这就记录上我使用的方法
+
+使用grant语句添加：首先在数据库本机上用root用户
+
+登录mysql，然后输入：
+mysql>use mysql;
+mysql>grant all privileges on *.* to root@localhost identified by '123456' with grant option;
+添加一个用户root并授权通过本地机（localhost)访问，密码"123456"。
+ 
+mysql>grant all privileges on *.* to root@"%" identified by '123456' with grant option;
+添加一个用户root并授权可从任何其它主机发起的访问（通配符％）。使用这一条语句即可
+
+然后刷新数据库权限
+mysql>flush privileges;
+至此在其他的机器上使用任何MySQL的管理工具就都可以连上这台服务器的MySQL的数据库了
+
+第一次为服务器搭建数据库环境，记录下这一时刻，以免以后再出错！
