@@ -1,0 +1,33 @@
+重置MySQL root密码(Mac下)
+
+连接数据库终端命令:
+
+　　mysql -h 127.0.0.1 -u root -P 3306 -p
+
+ 
+
+1. 关闭mysql服务器　
+
+　　sudo /usr/local/mysql/support-files/mysql.server stop
+　　也可以在系统偏好里有个MySQL里关闭。
+
+2. 更改安全级别
+
+　　$ cd /usr/local/mysql/bin
+ 
+　　$ sudo ./mysqld_safe --skip-grant-tables
+ 
+3. 新建Terminal窗口改root密码
+
+　　$ cd /usr/local/mysql/bin
+ 
+　　$ ./mysql -u root
+ 
+　　$mysql> FLUSH PRIVILEGES;
+ 
+　　$mysql> ALTER USER 'root'@'localhost' IDENTIFIED by '你的新密码';
+ 
+　　$mysql> EXIT
+ 
+
+4. 重启MySQL Server
